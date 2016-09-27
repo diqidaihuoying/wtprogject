@@ -1,11 +1,78 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+<mj.wt.wtapp.widget.dragview.view.DragLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_draglayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/splash">
 
-    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="100dp"
+        android:paddingBottom="40dp"
+        android:paddingLeft="20dp"
+        android:paddingTop="40dp">
 
-</RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/main_left_head"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                fresco:actualImageScaleType="centerInside"
+                fresco:roundAsCircle="true"
+                />
+            <ListView
+                android:id="@+id/main_left_listview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/main_left_head"
+                android:cacheColorHint="@android:color/transparent"></ListView>
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+    <mj.wt.wtapp.widget.dragview.view.DragRelativeLayout
+        android:id="@+id/main_dragrelativelayout"
+        android:layout_width="match_parent"
+        android:background="#18B4ED"
+        android:clipToPadding="true"
+        android:fitsSystemWindows="true"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/main_header"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/main_head_iv"
+                android:layout_width="30dp"
+                android:layout_marginLeft="10dp"
+                android:layout_height="30dp"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/icon_head" />
+
+            <TextView
+                android:id="@+id/main_add_tv"
+                android:layout_width="wrap_content"
+                android:text="添加好友"
+                android:layout_centerVertical="true"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
+                />
+        </RelativeLayout>
+
+        <ListView
+            android:id="@+id/main_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/main_header" />
+    </mj.wt.wtapp.widget.dragview.view.DragRelativeLayout>
+
+</mj.wt.wtapp.widget.dragview.view.DragLayout>

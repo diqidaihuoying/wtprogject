@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 设计规范颜色值 begin -->
+
+    <!-- 主背景色值 -->
+    <color name="background_color">#fff8f8f8</color>
+    <color name="status_bar_bg">#303F9F</color>
+    <color name="main_header_bg">#3F51B5</color>
+    <color name="main_footer_bg">#f5f5f5</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!-- 底栏字体颜色 -->
+    <color name="footer_text_color_normal">#343434</color>
+    <color name="footer_text_color_selected">#0081E1</color>
+
+    <!-- 字体颜色值 -->
+    <color name="text_color_blue">#0081E1</color>
+    <color name="text_color_black">#323232</color>
+    <color name="text_color_white">#ffffff</color>
+    <color name="text_color_gray">#888888</color>
+    <color name="text_color_gray_light">#A8A8A8</color>
+    <color name="text_color_red">#FF5B46</color>
+    <color name="text_color_hint">#ffaaaaaa</color>
+    <color name="text_color_input">#ff111111</color>
+    <color name="text_color_3c3c3c">#3c3c3c</color>
+    <color name="text_color_7b7b7b">#7b7b7b</color>
+    <color name="text_color_f59018">#f59018</color>
+    <color name="text_color_8b8a8a">#8b8a8a</color>
+
+    <color name="btn_blue_normal">#0081E1</color>
+    <color name="btn_blue_pressed">#0066FF</color>
+
+    <!-- 分割线色值 -->
+    <color name="short_blue">#48B7FF</color>
+    <color name="short_red">#FF5B46</color>
+    <color name="short_orange">#F3B720</color>
+    <color name="split_color">#D9D9D9</color>
+    <color name="border_color">#A8A8A8</color>
+
+    <!--竖分割线-->
+    <color name="vertical_line_color">#B5B5B5</color>
+
+    <!-- 透明半透明色值 -->
+    <color name="transparent">#00000000</color>
+    <color name="transparent_half">#66000000</color>
+
+    <!-- 设计规范颜色值 end-->
+
+    <!-- 黑白色值 -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="orange">#FFA500</color>
+    <color name="gray">#808080</color>
+    <color name="red">#FF0000</color>
+    <color name="gold">#FFD700</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="green">#008000</color>
+    <color name="blue">#0000FF</color>
+    <color name="purple">#800080</color>
+    <color name="pink">#FFC0CB</color>
+    <color name="yellow_lemon">#FFFACD</color>
+    <color name="gray_light">#DFDFDF</color>
+    <color name="gray_white">#F5F5F5</color>
+    <color name="gray_slate">#708090</color>
+    <color name="blue_light">#0083FF</color>
+
+    <color name="color_dfdfdf">#dfdfdf</color>
+    <color name="color_8b8a8a">#8b8a8a</color>
+    <color name="color_e9e9e9">#e9e9e9</color>
+    <color name="color_efeff7">#efeff7</color>
+
+
+    <color name="color_454c6d">#454c6d</color>
+    <color name="color_f97100">#f97100</color>
+    <color name="color_common_alpha">#00000000</color>
+    <color name="color_ADADAD">#ADADAD</color>
+    <color name="color_line">#e8e8e8</color>
+    <color name="color_007aff">#007aff</color>
+    <color name="color_f49018">#f49018</color>
+    <color name="color_f59018">#f59018</color>
+    <color name="color_b3b5b4">#b3b5b4</color>
+    <color name="color_eeeff3">#eeeff3</color>
+    <color name="color_e3e3e3">#e3e3e3</color>
+    <color name="color_3e3e3e">#3e3e3e</color>
+    <color name="color_298aff">#298aff</color>
+    <color name="color_888888">#888888</color>
+    <color name="color_d8d8d8">#d8d8d8</color>
+    <color name="color_3c3c3c">#3c3c3c</color>
+    <color name="color_d6d6d6">#d6d6d6</color>
+    <color name="color_bdbdbd">#bdbdbd</color>
+    <color name="color_f8f8f8">#f8f8f8</color>
+    <color name="color_f7f7f7">#F7F7F7</color>
+    <color name="color_f7f9f8">#f7f9f8</color>
+    <color name="color_c9daf8">#c9daf8</color>
+    <color name="color_5e5e5e">#5e5e5e</color>
+    <color name="color_515151">#515151</color>
+    <color name="color_007bfb">#007bfb</color>
+    <color name="color_ff4800">#ff4800</color>
+    <color name="color_5da9ff">#5da9ff</color>
+    <color name="color_d1d1d1">#d1d1d1</color>
+    <color name="color_d4d4d4">#d4d4d4</color>
+    <color name="color_afafaf">#afafaf</color>
+    <color name="color_8a8b8b">#8a8b8b</color>
+    <color name="color_f59119">#f59119</color>
+    <color name="color_F8FF7D">#F8FF7D</color>
+    <color name="color_EEEFF3">#EEEFF3</color>
+    <color name="player_view_bg">#FF424242</color>
+    <color name="color_73C9FF">#73C9FF</color>
+    <color name="color_363636">#363636</color>
+
+    <!-- zxing plugins color definition -->
+    <color name="viewfinder_mask">#e0000000</color>
+    <color name="result_view">#b0000000</color>
+    <color name="possible_result_points">#c0ffff00</color>
+</resources>
