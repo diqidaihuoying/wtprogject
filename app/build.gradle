@@ -25,4 +25,5 @@ dependencies {
     compile files('libs/nineoldandroids-2.4.0.jar')
     compile 'com.facebook.fresco:fresco:0.14.0'
     compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:support-v4:24.2.1'
 }
