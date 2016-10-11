@@ -6,6 +6,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
 
+import mj.wt.wtapp.huanxin.utils.PreferenceManager;
 import mj.wt.wtapp.utils.FrescoHelper;
 
 /**
@@ -17,6 +18,9 @@ public class Myappliaction extends Application {
         super.onCreate();
         // 初始化图片加载fresco
         Fresco.initialize(getApplicationContext(), FrescoHelper.getImagePipelineConfig(getApplicationContext()));
+
+        //initialize preference manager
+        PreferenceManager.init(this);
 
         EMOptions options = new EMOptions();
 // 默认添加好友时，是不需要验证的，改成需要验证
