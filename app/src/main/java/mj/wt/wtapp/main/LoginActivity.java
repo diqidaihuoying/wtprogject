@@ -75,7 +75,6 @@ public class LoginActivity extends TActivity {
 
     /**
      * login
-     *
      * @param view
      */
     public void login(View view) {
