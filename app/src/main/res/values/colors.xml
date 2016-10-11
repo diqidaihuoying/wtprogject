@@ -112,4 +112,8 @@
     <color name="viewfinder_mask">#e0000000</color>
     <color name="result_view">#b0000000</color>
     <color name="possible_result_points">#c0ffff00</color>
+    <color name="btn_login_pressed">#46678d</color>
+    <color name="btn_login_normal">#00acff</color>
+    <color name="btn_register_normal">#ffffff</color>
+    <color name="btn_register_pressed">#00acff</color>
 </resources>
