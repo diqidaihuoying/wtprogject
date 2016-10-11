@@ -11,39 +11,46 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.hyphenate.chat.EMConversation;
+import com.hyphenate.chat.EMMessage;
+import com.hyphenate.util.DateUtils;
+
+import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 
 import mj.wt.wtapp.R;
-import mj.wt.wtapp.widget.dragview.view.SwipeLayout;
+import mj.wt.wtapp.utils.MsgParseUtil;
 import mj.wt.wtapp.widget.dragview.listnenr.GooViewListener;
-import mj.wt.wtapp.widget.dragview.utils.Utils;
+import mj.wt.wtapp.widget.dragview.view.SwipeLayout;
 
 public class SwipeListAdapter extends BaseAdapter {
 
 	private Context mContext;
 	private LayoutInflater mInflater;
-	HashSet<Integer> mRemoved = new HashSet<Integer>();
+	private List<EMConversation> list;
 	HashSet<SwipeLayout> mUnClosedLayouts = new HashSet<SwipeLayout>();
 
-	public SwipeListAdapter(Context mContext) {
+	public SwipeListAdapter(Context mContext,List<EMConversation> list) {
 		super();
 		this.mContext = mContext;
 		mInflater = LayoutInflater.from(mContext);
+		this.list=list;
 	}
 
 	@Override
 	public int getCount() {
-		return 10;
+		return list==null?0:list.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return null;
+		return list==null?null:list.get(position);
 	}
 
 	@Override
 	public long getItemId(int position) {
-		return position;
+		return list==null?0:position;
 	}
 
 
@@ -57,6 +64,33 @@ public class SwipeListAdapter extends BaseAdapter {
 			mHolder = ViewHolder.fromValues(convertView);
 			convertView.setTag(mHolder);
 		}
+
+		// get conversation
+		EMConversation conversation = (EMConversation) getItem(position);
+		String username = conversation.getUserName();
+		//设置用户名子
+		if (conversation.getType() == EMConversation.EMConversationType.Chat) {
+			mHolder.mName.setText(username);
+		}
+		//设置头像
+		mHolder.mImage.setImageResource(R.mipmap.icon_head);
+		//设置消息红点
+		if (conversation.getUnreadMsgCount() > 0) {
+			// show unread message count
+			mHolder.mReminder.setText(String.valueOf(conversation.getUnreadMsgCount()));
+			mHolder.mReminder.setVisibility(View.VISIBLE);
+		} else {
+			mHolder.mReminder.setVisibility(View.INVISIBLE);
+		}
+		if (conversation.getAllMsgCount() != 0) {
+			// show the content of latest message
+			EMMessage lastMessage = conversation.getLastMessage();
+			//设置最新一条消息的时间
+			mHolder.time.setText(DateUtils.getTimestampString(new Date(lastMessage.getMsgTime())));
+			//设置最新的一条消息
+			mHolder.message.setText(MsgParseUtil.getMessageDigest(lastMessage, mContext));
+		}
+
 		SwipeLayout view = (SwipeLayout) convertView;
 		view.close(false, false);
 		view.getFrontView().setOnClickListener(new OnClickListener() {
@@ -66,35 +100,25 @@ public class SwipeListAdapter extends BaseAdapter {
 			}
 		});
 		view.setSwipeListener(mSwipeListener);
-		mHolder.mImage.setImageResource(R.mipmap.icon_head);
-		mHolder.mName.setText("万涛");
+
 		mHolder.mButtonCall.setTag(position);
 		mHolder.mButtonCall.setOnClickListener(onActionClick);
 		mHolder.mButtonDel.setTag(position);
 		mHolder.mButtonDel.setOnClickListener(onActionClick);
-		TextView mUnreadView = mHolder.mReminder;
-		boolean visiable = !mRemoved.contains(position);
-		mUnreadView.setVisibility(visiable ? View.VISIBLE : View.GONE);
-		if (visiable) {
-			mUnreadView.setText(String.valueOf(position));
-			mUnreadView.setTag(position);
-			GooViewListener mGooListener = new GooViewListener(mContext, mUnreadView) {
+		mHolder.mReminder.setTag(position);
+		GooViewListener mGooListener = new GooViewListener(mContext, mHolder.mReminder) {
 				@Override
 				public void onDisappear(PointF mDragCenter) {
 					super.onDisappear(mDragCenter);
-					mRemoved.add(position);
 					notifyDataSetChanged();
-					Utils.showToast(mContext, "Cheers! We have get rid of it!");
 				}
 				@Override
 				public void onReset(boolean isOutOfRange) {
 					super.onReset(isOutOfRange);
 					notifyDataSetChanged();
-					Utils.showToast(mContext, isOutOfRange ? "Are you regret?" : "Try again!");
 				}
 			};
-			mUnreadView.setOnTouchListener(mGooListener);
-		}
+		mHolder.mReminder.setOnTouchListener(mGooListener);
 		return view;
 	}
 
@@ -106,10 +130,8 @@ public class SwipeListAdapter extends BaseAdapter {
 			int id = v.getId();
 			if (id == R.id.bt_call) {
 				closeAllLayout();
-				Utils.showToast(mContext, "position: " + p + " call");
 			} else if (id == R.id.bt_delete) {
 				closeAllLayout();
-				Utils.showToast(mContext, "position: " + p + " del");
 			}
 		}
 	};
@@ -155,14 +177,18 @@ public class SwipeListAdapter extends BaseAdapter {
 		public Button mButtonDel;
 		public TextView mReminder;
 		public TextView mName;
+		public TextView message;
+		public  TextView time;
 		private ViewHolder(ImageView mImage, Button mButtonCall,
-				Button mButtonDel, TextView mReminder, TextView mName) {
+				Button mButtonDel, TextView mReminder, TextView mName,TextView message,TextView time) {
 			super();
 			this.mImage = mImage;
 			this.mButtonCall = mButtonCall;
 			this.mButtonDel = mButtonDel;
 			this.mReminder = mReminder;
 			this.mName = mName;
+			this.message=message;
+			this.time=time;
 		}
 
 		public static ViewHolder fromValues(View view) {
@@ -171,7 +197,7 @@ public class SwipeListAdapter extends BaseAdapter {
 				(Button) view.findViewById(R.id.bt_call),
 				(Button) view.findViewById(R.id.bt_delete),
 				(TextView) view.findViewById(R.id.point),
-				(TextView) view.findViewById(R.id.tv_name));
+				(TextView) view.findViewById(R.id.tv_name),(TextView)view.findViewById(R.id.tv_message),(TextView)view.findViewById(R.id.tv_time));
 		}
 	}
 }
