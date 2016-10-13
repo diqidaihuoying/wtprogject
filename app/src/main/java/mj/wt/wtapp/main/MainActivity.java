@@ -14,10 +14,15 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.hyphenate.EMMessageListener;
+import com.hyphenate.chat.EMClient;
+import com.hyphenate.chat.EMCmdMessageBody;
+import com.hyphenate.chat.EMMessage;
 import com.nineoldandroids.view.ViewHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import mj.wt.wtapp.R;
 import mj.wt.wtapp.base.TActivity;
@@ -41,6 +46,40 @@ public class MainActivity extends TActivity {
     private static final String FRAGMENT_TAGS = "fragmentTags";
     private static final String CURR_INDEX = "currIndex";
     private FragmentManager fragmentManager;
+
+    private EMMessageListener messageListener = new EMMessageListener() {
+
+        @Override
+        public void onMessageReceived(List<EMMessage> messages) {
+            refreshUIWithMessage();
+        }
+
+        @Override
+        public void onCmdMessageReceived(List<EMMessage> messages) {
+        }
+
+        @Override
+        public void onMessageReadAckReceived(List<EMMessage> messages) {
+        }
+
+        @Override
+        public void onMessageDeliveryAckReceived(List<EMMessage> message) {
+        }
+
+        @Override
+        public void onMessageChanged(EMMessage message, Object change) {}
+    };
+
+    private void refreshUIWithMessage() {
+        if (currIndex == 0) {
+            // refresh conversation list
+            NewsFragment fragmentByTag = (NewsFragment) fragmentManager.findFragmentByTag(fragmentTags.get(currIndex));
+            if (fragmentByTag!= null) {
+                fragmentByTag.refresh();
+            }
+        }
+    }
+
     @Override
     public int getLayoutResId() {
         return R.layout.activity_main;
@@ -56,6 +95,7 @@ public class MainActivity extends TActivity {
             initFromSavedInstantsState(savedInstanceState);
         }
         initTabViews();
+        EMClient.getInstance().chatManager().addMessageListener(messageListener);
     }
 
     private void initTabViews() {
@@ -209,4 +249,11 @@ public class MainActivity extends TActivity {
         public void onStartOpen(DragLayout.Direction direction) {
         }
     };
+
+
+    @Override
+    protected void onDestroy() {
+        EMClient.getInstance().chatManager().removeMessageListener(messageListener);
+        super.onDestroy();
+    }
 }

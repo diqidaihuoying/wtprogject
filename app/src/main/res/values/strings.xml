@@ -8,7 +8,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
-
     <string name="location_recv">[%1$s location]</string>
     <string name="location_prefix">[my location]</string>
     <string name="voice">Voice</string>

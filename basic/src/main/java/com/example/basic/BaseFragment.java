@@ -65,4 +65,5 @@ public abstract class BaseFragment extends Fragment implements I_Fragment,I_Regi
     unRegister();
     super.onDestroyView();
   }
+
 }

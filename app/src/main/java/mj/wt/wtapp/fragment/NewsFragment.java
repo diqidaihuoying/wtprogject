@@ -28,6 +28,15 @@ public class NewsFragment extends BaseFragment {
 
     private ListView listview;
     private SwipeListAdapter adapter;
+    private  List<EMConversation> list=new ArrayList<>();
+
+    @Override
+    public void initData() {
+        super.initData();
+        list.clear();
+        list.addAll(loadConversationList());
+    }
+
     @Override
     public int getLayoutResId() {
         return R.layout.fragment_news;
@@ -37,7 +46,7 @@ public class NewsFragment extends BaseFragment {
     public void initView(View parentView) {
         super.initView(parentView);
         listview= (ListView)parentView. findViewById(R.id.newsfragment_listview);
-        adapter = new SwipeListAdapter(activity,loadConversationList());
+        adapter = new SwipeListAdapter(activity,list);
         listview.setAdapter(adapter);
         ((MainActivity)activity).mDragLayout.setAdapterInterface(adapter);
         listview.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -102,5 +111,12 @@ public class NewsFragment extends BaseFragment {
             }
 
         });
+    }
+
+    public  void  refresh()
+    {
+        list.clear();
+        list.addAll(loadConversationList());
+        adapter.notifyDataSetChanged();
     }
 }
