@@ -72,7 +72,6 @@ public class ChatActivity extends TActivity implements SwipeRefreshLayout.OnRefr
         }
         adapter=new ChatAdapter(activity,list);
        imm =(InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-
     }
 
 
