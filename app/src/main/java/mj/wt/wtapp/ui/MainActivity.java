@@ -1,22 +1,18 @@
-package mj.wt.wtapp.main;
+package mj.wt.wtapp.ui;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.hyphenate.EMMessageListener;
 import com.hyphenate.chat.EMClient;
-import com.hyphenate.chat.EMCmdMessageBody;
 import com.hyphenate.chat.EMMessage;
 import com.nineoldandroids.view.ViewHelper;
 
@@ -29,8 +25,6 @@ import mj.wt.wtapp.base.TActivity;
 import mj.wt.wtapp.fragment.ContactFragment;
 import mj.wt.wtapp.fragment.NewsFragment;
 import mj.wt.wtapp.fragment.ZoonFragment;
-import mj.wt.wtapp.widget.dragview.adapter.SwipeListAdapter;
-import mj.wt.wtapp.widget.dragview.utils.Utils;
 import mj.wt.wtapp.widget.dragview.view.DragLayout;
 import mj.wt.wtapp.widget.dragview.view.DragRelativeLayout;
 
@@ -67,7 +61,9 @@ public class MainActivity extends TActivity {
         }
 
         @Override
-        public void onMessageChanged(EMMessage message, Object change) {}
+        public void onMessageChanged(EMMessage message, Object change) {
+
+        }
     };
 
     private void refreshUIWithMessage() {

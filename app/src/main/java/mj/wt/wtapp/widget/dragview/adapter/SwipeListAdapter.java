@@ -30,12 +30,16 @@ public class SwipeListAdapter extends BaseAdapter {
 	private LayoutInflater mInflater;
 	private List<EMConversation> list;
 	HashSet<SwipeLayout> mUnClosedLayouts = new HashSet<SwipeLayout>();
-
+	private  ItemClickListener itemClickListener;
 	public SwipeListAdapter(Context mContext,List<EMConversation> list) {
 		super();
 		this.mContext = mContext;
 		mInflater = LayoutInflater.from(mContext);
 		this.list=list;
+	}
+
+	public void setItemClickListener(ItemClickListener itemClickListener) {
+		this.itemClickListener = itemClickListener;
 	}
 
 	@Override
@@ -96,11 +100,11 @@ public class SwipeListAdapter extends BaseAdapter {
 		view.getFrontView().setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-
+				if (itemClickListener!=null)
+					itemClickListener.itemclick(position);
 			}
 		});
 		view.setSwipeListener(mSwipeListener);
-
 		mHolder.mButtonCall.setTag(position);
 		mHolder.mButtonCall.setOnClickListener(onActionClick);
 		mHolder.mButtonDel.setTag(position);
@@ -200,4 +204,9 @@ public class SwipeListAdapter extends BaseAdapter {
 				(TextView) view.findViewById(R.id.tv_name),(TextView)view.findViewById(R.id.tv_message),(TextView)view.findViewById(R.id.tv_time));
 		}
 	}
+	public interface ItemClickListener
+	{
+		void itemclick(int position);
+	}
+
 }

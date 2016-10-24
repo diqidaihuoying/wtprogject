@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/chat_toobar"
     android:layout_width="match_parent"
     android:layout_height="50dp"
-    android:background="@color/top_bar_normal_bg"
     android:gravity="center_vertical" >
 
         <ImageView
@@ -18,14 +16,12 @@
          />
 
         <TextView
-            android:text="万涛"
         android:id="@+id/toobar_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:textColor="#ffffff"
         android:textSize="20sp" />
-
 
         <ImageView
             android:src="@mipmap/chat_setting"
@@ -38,12 +34,11 @@
           />
     <ImageView
         android:layout_toLeftOf="@id/toobar_right1"
-        android:src="@mipmap/ic_phone"
+        android:src="@mipmap/chat_phone"
         android:layout_marginRight="10dp"
         android:id="@+id/toobar_right2"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:layout_centerVertical="true"
         />
 

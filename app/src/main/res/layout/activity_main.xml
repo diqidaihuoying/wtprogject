@@ -35,8 +35,8 @@
         android:id="@+id/main_dragrelativelayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clipToPadding="true"
         android:background="#18B4ED"
+        android:clipToPadding="true"
         android:fitsSystemWindows="true">
         <include layout="@layout/container_main" />
     </mj.wt.wtapp.widget.dragview.view.DragRelativeLayout>

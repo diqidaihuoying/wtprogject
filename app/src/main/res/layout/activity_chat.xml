@@ -4,9 +4,36 @@
     android:id="@+id/activity_chat"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="mj.wt.wtapp.main.ChatActivity">
+    android:clipToPadding="true"
+    android:fitsSystemWindows="true"
+    android:background="@color/top_bar_normal_bg"
+    tools:context="mj.wt.wtapp.ui.ChatActivity">
 
-    <include layout="@layout/chat_toobar"></include>
+    <include
+        android:id="@+id/chat_toobar"
+        layout="@layout/chat_toobar"></include>
 
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/chat_swipe_layout"
+        android:layout_below="@id/chat_toobar"
+        android:layout_above="@+id/chat_root"
+        android:background="@color/color_dfdfdf"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+        <ListView
+            android:id="@+id/chat_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cacheColorHint="#00000000"
+            android:divider="@null"
+            android:dividerHeight="5dp"
+            android:listSelector="#00000000"
+            android:scrollbarStyle="outsideOverlay"
+            android:transcriptMode="normal" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 
+    <include
+        android:id="@+id/chat_root"
+        layout="@layout/chat_root"></include>
 </RelativeLayout>

@@ -1,4 +1,4 @@
-package mj.wt.wtapp.main;
+package mj.wt.wtapp.ui;
 
 
 import android.app.ProgressDialog;

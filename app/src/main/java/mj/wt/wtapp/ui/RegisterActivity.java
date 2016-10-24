@@ -1,13 +1,10 @@
-package mj.wt.wtapp.main;
+package mj.wt.wtapp.ui;
 
 import android.app.ProgressDialog;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.basic.utils.SnackbarUtil;
 import com.hyphenate.EMError;

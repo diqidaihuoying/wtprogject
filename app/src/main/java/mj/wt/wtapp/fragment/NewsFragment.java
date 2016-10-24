@@ -1,10 +1,12 @@
 package mj.wt.wtapp.fragment;
 
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.util.Pair;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.basic.BaseFragment;
@@ -18,13 +20,14 @@ import java.util.List;
 import java.util.Map;
 
 import mj.wt.wtapp.R;
-import mj.wt.wtapp.main.MainActivity;
+import mj.wt.wtapp.ui.ChatActivity;
+import mj.wt.wtapp.ui.MainActivity;
 import mj.wt.wtapp.widget.dragview.adapter.SwipeListAdapter;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NewsFragment extends BaseFragment {
+public class NewsFragment extends BaseFragment implements SwipeListAdapter.ItemClickListener{
 
     private ListView listview;
     private SwipeListAdapter adapter;
@@ -47,6 +50,7 @@ public class NewsFragment extends BaseFragment {
         super.initView(parentView);
         listview= (ListView)parentView. findViewById(R.id.newsfragment_listview);
         adapter = new SwipeListAdapter(activity,list);
+        adapter.setItemClickListener(this);
         listview.setAdapter(adapter);
         ((MainActivity)activity).mDragLayout.setAdapterInterface(adapter);
         listview.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -62,7 +66,11 @@ public class NewsFragment extends BaseFragment {
         });
     }
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        refresh();
+    }
 
     private List<EMConversation> loadConversationList(){
         // get all conversations
@@ -113,10 +121,18 @@ public class NewsFragment extends BaseFragment {
         });
     }
 
+
     public  void  refresh()
     {
         list.clear();
         list.addAll(loadConversationList());
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void itemclick(int position) {
+        Intent intent=new Intent(activity, ChatActivity.class);
+        intent.putExtra("toChatUsername",list.get(position).getUserName());
+        startActivity(intent);
     }
 }
