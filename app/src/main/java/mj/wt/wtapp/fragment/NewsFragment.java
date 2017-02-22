@@ -32,6 +32,7 @@ public class NewsFragment extends BaseFragment implements SwipeListAdapter.ItemC
     private ListView listview;
     private SwipeListAdapter adapter;
     private  List<EMConversation> list=new ArrayList<>();
+    private int currentPostion;
 
     @Override
     public void initData() {
@@ -131,8 +132,19 @@ public class NewsFragment extends BaseFragment implements SwipeListAdapter.ItemC
 
     @Override
     public void itemclick(int position) {
+        currentPostion=position;
         Intent intent=new Intent(activity, ChatActivity.class);
         intent.putExtra("toChatUsername",list.get(position).getUserName());
-        startActivity(intent);
+        startActivityForResult(intent,2);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode==2)
+        {
+            list.get(currentPostion).markMessageAsRead(list.get(currentPostion).getUserName());
+            adapter.notifyDataSetChanged();
+        }
     }
 }

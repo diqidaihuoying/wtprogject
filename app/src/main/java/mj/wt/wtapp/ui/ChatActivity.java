@@ -83,6 +83,8 @@ public class ChatActivity extends TActivity implements SwipeRefreshLayout.OnRefr
         back= (ImageView) findViewById(R.id.toobar_back);
         listView= (ListView) findViewById(R.id.chat_listview);
         listView.setAdapter(adapter);
+        if (list.size()!=0)
+        listView.setSelection(list.size() - 1);
         refreshLayout= (SwipeRefreshLayout) findViewById(R.id.chat_swipe_layout);
         back.setOnClickListener(this);
         refreshLayout.setColorSchemeResources(R.color.holo_blue_bright, R.color.holo_green_light,
@@ -150,6 +152,7 @@ public class ChatActivity extends TActivity implements SwipeRefreshLayout.OnRefr
                             try {
                                     list.addAll(conversation.loadMoreMsgFromDB(((EMMessage)adapter.getItem(0)).getMsgId(),
                                             pagesize));
+                                Collections.sort(list,new TimeSortCompartor());
                                 adapter.notifyDataSetChanged();
                             } catch (Exception e1) {
                                 refreshLayout.setRefreshing(false);
@@ -205,5 +208,11 @@ public class ChatActivity extends TActivity implements SwipeRefreshLayout.OnRefr
     protected void onDestroy() {
         super.onDestroy();
         EMClient.getInstance().chatManager().removeMessageListener(messageListener);
+    }
+    public class TimeSortCompartor implements Comparator<EMMessage>{
+        @Override
+        public int compare(EMMessage o1, EMMessage o2) {
+            return  (int)(o1.getMsgTime()-o2.getMsgTime());
+        }
     }
 }

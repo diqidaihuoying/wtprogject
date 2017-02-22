@@ -1,6 +1,7 @@
 package mj.wt.wtapp.adapter;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -49,36 +50,17 @@ public class ChatAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
         EMMessage message= (EMMessage) getItem(position);
-        if (convertView==null)
-        {
-            if (message.direct() == EMMessage.Direct.RECEIVE )
+          if (message.direct() == EMMessage.Direct.RECEIVE )
             {
-                convertView = View.inflate(context, R.layout.ease_row_received_message,null);
-            }else if (message.direct() == EMMessage.Direct.SEND)
+                convertView= LayoutInflater.from(context).inflate(R.layout.ease_row_received_message,null);
+            }else
             {
-                convertView = View.inflate(context, R.layout.ease_row_sent_message,null);
+                convertView= LayoutInflater.from(context).inflate(R.layout.ease_row_sent_message,null);
             }
-            viewHolder=new ViewHolder();
-            findViewByid(viewHolder,convertView);
-            convertView.setTag(viewHolder);
-        }else
-        {
-            viewHolder= (ViewHolder) convertView.getTag();
-        }
+        viewHolder=new ViewHolder();
+        findViewByid(viewHolder,convertView);
         //设置时间搓
         setBaseTime(viewHolder,position,message);
-
-        //设置用户头像
-        viewHolder.headIv.setImageResource(R.mipmap.icon_head);
-
-        //设置已读
-        if (viewHolder.tvRead != null) {
-            if (message.isAcked()) {
-                viewHolder.tvRead.setVisibility(View.VISIBLE);
-            } else {
-                viewHolder.tvRead.setVisibility(View.INVISIBLE);
-            }
-        }
 
         //设置消息内容
         if (viewHolder.content != null)
@@ -114,7 +96,6 @@ public class ChatAdapter extends BaseAdapter {
         viewHolder.headIv= (ImageView) convertView.findViewById(R.id.iv_userhead);
         viewHolder.content= (TextView) convertView.findViewById(R.id.tv_chatcontent);
         viewHolder.msgStatu= (ImageView) convertView.findViewById(R.id.msg_status);
-        viewHolder.tvRead= (TextView) convertView.findViewById(R.id.tv_ack);
         viewHolder.progressBar= (ProgressBar) convertView.findViewById(R.id.progress_bar);
     }
 
@@ -127,7 +108,6 @@ public class ChatAdapter extends BaseAdapter {
         public TextView content;
         public TextView sendTime;
         public ImageView msgStatu;
-        public TextView tvRead;
         public ProgressBar progressBar;
     }
 
