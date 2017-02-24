@@ -2,6 +2,7 @@ package mj.wt.wtapp.fragment;
 
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Pair;
 import android.view.View;
@@ -13,6 +14,7 @@ import com.example.basic.BaseFragment;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMConversation;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import mj.wt.wtapp.R;
+import mj.wt.wtapp.bean.PhotoInfo;
 import mj.wt.wtapp.ui.ChatActivity;
 import mj.wt.wtapp.ui.MainActivity;
 import mj.wt.wtapp.widget.dragview.adapter.SwipeListAdapter;
@@ -39,6 +42,17 @@ public class NewsFragment extends BaseFragment implements SwipeListAdapter.ItemC
         super.initData();
         list.clear();
         list.addAll(loadConversationList());
+        contactGetMethods();
+
+    }
+
+    private void contactGetMethods() {
+        List<PhotoInfo> friends=new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            PhotoInfo photoInfo=new PhotoInfo(list.get(i).getUserName(),"无法获取到手机号码");
+            friends.add(photoInfo);
+        }
+        ((MainActivity)activity).setPhotoInfos(friends);
     }
 
     @Override

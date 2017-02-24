@@ -22,6 +22,7 @@ import java.util.List;
 
 import mj.wt.wtapp.R;
 import mj.wt.wtapp.base.TActivity;
+import mj.wt.wtapp.bean.PhotoInfo;
 import mj.wt.wtapp.fragment.ContactFragment;
 import mj.wt.wtapp.fragment.NewsFragment;
 import mj.wt.wtapp.fragment.ZoonFragment;
@@ -40,6 +41,16 @@ public class MainActivity extends TActivity {
     private static final String FRAGMENT_TAGS = "fragmentTags";
     private static final String CURR_INDEX = "currIndex";
     private FragmentManager fragmentManager;
+
+    public List<PhotoInfo> getPhotoInfos() {
+        return photoInfos;
+    }
+
+    public void setPhotoInfos(List<PhotoInfo> photoInfos) {
+        this.photoInfos = photoInfos;
+    }
+
+    private List<PhotoInfo> photoInfos;
 
     private EMMessageListener messageListener = new EMMessageListener() {
 

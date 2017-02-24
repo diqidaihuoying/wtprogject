@@ -1,15 +1,19 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:orientation="vertical"
     tools:context="mj.wt.wtapp.fragment.ContactFragment">
 
    <RelativeLayout
        android:id="@+id/contact_search"
        android:background="@color/color_d1d1d1"
        android:layout_width="match_parent"
-       android:layout_margin="10dp"
+       android:layout_marginLeft="20dp"
+       android:layout_marginRight="20dp"
+       android:layout_marginTop="10dp"
+       android:layout_marginBottom="10dp"
        android:padding="5dp"
        android:layout_height="wrap_content">
        <TextView
@@ -18,10 +22,18 @@
            android:layout_centerInParent="true"
            android:text="搜索"
            android:gravity="center"
-           android:textSize="16sp"
+           android:textSize="14sp"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content" />
    </RelativeLayout>
 
+<ExpandableListView
+    android:background="@color/color_dfdfdf"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:id="@+id/expandlistview"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-</FrameLayout>
+</ExpandableListView>
+</LinearLayout>
