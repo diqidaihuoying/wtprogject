@@ -6,6 +6,7 @@
     android:orientation="vertical"
     tools:context="mj.wt.wtapp.fragment.ContactFragment">
 
+
    <RelativeLayout
        android:id="@+id/contact_search"
        android:background="@color/color_d1d1d1"
@@ -26,6 +27,15 @@
            android:layout_width="wrap_content"
            android:layout_height="wrap_content" />
    </RelativeLayout>
+
+    <LinearLayout
+        android:background="@mipmap/contact_bg"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+
+    </LinearLayout>
 
 <ExpandableListView
     android:background="@color/color_dfdfdf"
