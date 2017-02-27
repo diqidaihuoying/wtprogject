@@ -1,6 +1,7 @@
 package mj.wt.wtapp.fragment;
 
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.example.basic.BaseFragment;
 import com.example.basic.utils.SnackbarUtil;
 
 import mj.wt.wtapp.R;
+import mj.wt.wtapp.ui.ZoonActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -49,7 +51,8 @@ public class ZoonFragment extends BaseFragment {
         super.onClick(v);
         if (v==zoonView)
         {
-            Toast.makeText(activity,"空间动态",Toast.LENGTH_SHORT).show();
+            Intent intent =new Intent(activity,ZoonActivity.class);
+            startActivity(intent);
         }
     }
     class ListAdapter extends  BaseAdapter
