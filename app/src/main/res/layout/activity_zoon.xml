@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_zoon"
     android:layout_width="match_parent"
@@ -23,31 +23,11 @@
                android:src="@mipmap/zooniv"
                android:layout_width="match_parent"
                android:layout_height="200dp" />
-            <TextView
-                android:text="111111"
-                android:gravity="center"
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerview"
                 android:layout_width="match_parent"
-                android:layout_height="200dp" />
-            <TextView
-                android:text="111111"
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="200dp" />
-            <TextView
-                android:text="111111"
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="200dp" />
-            <TextView
-                android:text="111111"
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="200dp" />
-            <TextView
-                android:text="111111"
-                android:gravity="center"
-                android:layout_width="match_parent"
-                android:layout_height="200dp" />
+                android:layout_height="match_parent">
+            </android.support.v7.widget.RecyclerView>
         </LinearLayout>
     </mj.wt.wtapp.widget.ZoonScrollView>
 
@@ -84,4 +64,4 @@
             android:layout_height="wrap_content" />
     </RelativeLayout>
 
-</FrameLayout>
+</RelativeLayout>

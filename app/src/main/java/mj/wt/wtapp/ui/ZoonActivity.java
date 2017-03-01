@@ -3,12 +3,15 @@ package mj.wt.wtapp.ui;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import mj.wt.wtapp.R;
+import mj.wt.wtapp.adapter.RecyclerAdapter;
 import mj.wt.wtapp.widget.ZoonScrollView;
 
 public class ZoonActivity extends AppCompatActivity implements ZoonScrollView.ZoonScrollViewListener{
@@ -18,6 +21,8 @@ public class ZoonActivity extends AppCompatActivity implements ZoonScrollView.Zo
     private RelativeLayout zoonBar;
     private ImageView zoonImage;
     private int height;
+    private RecyclerView recyclerView;
+    private RecyclerAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +36,11 @@ public class ZoonActivity extends AppCompatActivity implements ZoonScrollView.Zo
         zoonImage.setFocusableInTouchMode(true);
         zoonImage.requestFocus();
         initListeners();
+        initData();
+    }
+
+    private void initData() {
+        adapter=new RecyclerAdapter(this);
     }
 
 
@@ -38,6 +48,9 @@ public class ZoonActivity extends AppCompatActivity implements ZoonScrollView.Zo
         scrollView= (ZoonScrollView) findViewById(R.id.zoonscrollview);
         zoonBar= (RelativeLayout) findViewById(R.id.zoon_bar);
         zoonImage= (ImageView) findViewById(R.id.zoon_iv);
+        recyclerView= (RecyclerView) findViewById(R.id.recyclerview);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
     }
     /**
      * 获取顶部图片高度后，设置滚动监听
@@ -70,3 +83,5 @@ public class ZoonActivity extends AppCompatActivity implements ZoonScrollView.Zo
         }
     }
 }
+
+
