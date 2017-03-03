@@ -33,4 +33,6 @@ dependencies {
     compile 'com.android.support:support-v4:24.2.1'
     compile files('libs/hyphenatechat_3.1.5.jar')
     compile 'com.android.support:design:24.2.1'
+    compile project(':okhttp')
+    compile 'com.google.code.gson:gson:2.8.0'
 }

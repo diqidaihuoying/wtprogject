@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/basic/basic.iml" filepath="$PROJECT_DIR$/basic/basic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/okhttp/okhttp.iml" filepath="$PROJECT_DIR$/okhttp/okhttp.iml" />
       <module fileurl="file://$PROJECT_DIR$/wtprogject.iml" filepath="$PROJECT_DIR$/wtprogject.iml" />
     </modules>
   </component>

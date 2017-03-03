@@ -7,18 +7,20 @@
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/iv_head"
+        fresco:roundAsCircle="true"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_margin="10dp" />
 
     <TextView
+        android:layout_marginTop="10dp"
         android:id="@+id/tv_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/iv_head"
         android:layout_toRightOf="@id/iv_head"
         android:text="刘倩"
-        android:textColor="@color/color_5e5e5e"
+        android:textColor="@color/color_3c3c3c"
         android:textSize="18sp" />
 
     <TextView
@@ -26,11 +28,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_name"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="4dp"
         android:layout_toRightOf="@id/iv_head"
         android:text="今天 17:50"
         android:textColor="@color/color_8a8b8b"
-        android:textSize="16sp" />
+        android:textSize="14sp" />
 
     <TextView
         android:id="@+id/tv_content"
@@ -40,8 +42,8 @@
         android:layout_below="@id/iv_head"
         android:layout_marginRight="10dp"
         android:text="龙城是我家，老爹最伟大小小少年，没有烦恼，万事都有老爹罩什么，那是电锯（真听不懂这句什么意思）路边草丛开，不采白不采你颤抖的样子好好玩呀花糟的老头子们，闭嘴被追哄的滋味，爽吗坐稳了，十五号机开启暴走状态龙城小霸王，威力无穷少爷"
-        android:textColor="@color/color_8a8b8b"
-        android:textSize="16sp" />
+        android:textColor="@color/color_5e5e5e"
+        android:textSize="15sp" />
 
     <RelativeLayout
         android:id="@+id/layout_content"
@@ -131,10 +133,11 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dp"
             android:text="第七代火影丶Decade灰丶全场最佳霍夫人丶【先知】万妮丶李白哥哥丶【玫瑰姐姐】徐丶萝萝萝萝萝卜丶z玲珑骰子等500人觉得很赞"
-            android:textColor="@color/color_007aff" />
+            android:textColor="@color/color_5da9ff" />
     </LinearLayout>
 
     <TextView
+        android:id="@+id/tv_comment"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:layout_below="@id/line_likelist"
@@ -147,4 +150,10 @@
         android:text="评论"
         android:textColor="@color/color_d1d1d1"
         android:textSize="16sp" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/tv_comment"
+        android:layout_margin="10dp"
+        android:background="@color/color_line" />
 </RelativeLayout>

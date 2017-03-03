@@ -3,10 +3,11 @@
      android:layout_width="match_parent"
     android:layout_height="match_parent">
     <RelativeLayout
+        android:layout_margin="10dp"
         android:id="@+id/videoview"
         android:background="@mipmap/icon_play_vedio2"
         android:layout_width="match_parent"
-        android:layout_height="220dp">
+        android:layout_height="200dp">
     </RelativeLayout>
 
 </RelativeLayout>
