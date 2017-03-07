@@ -34,7 +34,6 @@ public class ZoonActivity extends AppCompatActivity {
     private RecyclerAdapter adapter;
     private LinearLayoutManager linearLayoutManager;
 
-
     private List<ZoneBigPicture.DataBean.ItemsBean> bigPictures;
 
     @Override
@@ -55,6 +54,7 @@ public class ZoonActivity extends AppCompatActivity {
         adapter = new RecyclerAdapter(this,bigPictures);
         getNetWorkData();//获取网络数据
     }
+
 
     private void initView() {
         zoonBar= (RelativeLayout) findViewById(R.id.zoon_bar);

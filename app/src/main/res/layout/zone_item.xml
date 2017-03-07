@@ -41,7 +41,7 @@
         android:layout_alignLeft="@id/iv_head"
         android:layout_below="@id/iv_head"
         android:layout_marginRight="10dp"
-        android:text="龙城是我家，老爹最伟大小小少年，没有烦恼，万事都有老爹罩什么，那是电锯（真听不懂这句什么意思）路边草丛开，不采白不采你颤抖的样子好好玩呀花糟的老头子们，闭嘴被追哄的滋味，爽吗坐稳了，十五号机开启暴走状态龙城小霸王，威力无穷少爷"
+        android:text="威力无穷少爷"
         android:textColor="@color/color_5e5e5e"
         android:textSize="15sp" />
 
@@ -80,8 +80,8 @@
 
     <ImageView
         android:id="@+id/iv_zhuanfa"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_alignBottom="@id/tv_scancount"
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
@@ -89,8 +89,8 @@
 
     <ImageView
         android:id="@+id/iv_comment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_alignBottom="@id/tv_scancount"
         android:layout_marginRight="18dp"
         android:layout_toLeftOf="@id/iv_zhuanfa"
@@ -98,8 +98,8 @@
 
     <ImageView
         android:id="@+id/iv_like"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:layout_alignBottom="@id/tv_scancount"
         android:layout_marginRight="18dp"
         android:layout_toLeftOf="@id/iv_comment"
@@ -132,15 +132,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="6dp"
-            android:text="第七代火影丶Decade灰丶全场最佳霍夫人丶【先知】万妮丶李白哥哥丶【玫瑰姐姐】徐丶萝萝萝萝萝卜丶z玲珑骰子等500人觉得很赞"
-            android:textColor="@color/color_5da9ff" />
+            android:text="萝萝萝萝萝卜丶z玲珑骰子等500人觉得很赞"
+            android:textColor="@color/color_007bfb" />
     </LinearLayout>
+
+    <mj.wt.wtapp.widget.MyGridView
+        android:layout_below="@id/line_likelist"
+        android:id="@+id/listview"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_width="match_parent"
+        android:horizontalSpacing="6dp"
+        android:numColumns="1"
+        android:layout_height="match_parent"></mj.wt.wtapp.widget.MyGridView>
 
     <TextView
         android:id="@+id/tv_comment"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:layout_below="@id/line_likelist"
+        android:layout_below="@id/listview"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
