@@ -1,15 +1,27 @@
 package mj.wt.wtapp.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.print.PageRange;
+import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextPaint;
+import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -18,6 +30,9 @@ import java.util.List;
 import mj.wt.wtapp.R;
 import mj.wt.wtapp.bean.TalkInfo;
 import mj.wt.wtapp.utils.ParesJsonUtil;
+import mj.wt.wtapp.utils.SoftKeyBoardUtil;
+
+import static android.R.id.edit;
 
 /**
  * Created by wantao on 2017/3/7.
@@ -25,17 +40,20 @@ import mj.wt.wtapp.utils.ParesJsonUtil;
 
 public class TalkAdapter extends BaseAdapter {
 
-    private List<TalkInfo.DataBean.ItemsBean> list=new ArrayList<>();
+    private LinkedList<TalkInfo.DataBean.ItemsBean> list;
     private Context context;
-    private String currentUserName="";
-    private int text;
+    private String currentUserName;
 
-    public TalkAdapter(Context context) {
+    private RecyclerAdapter adapter;
+    public TalkAdapter(Context context,LinkedList<TalkInfo.DataBean.ItemsBean> list,String currentUserName) {
         this.context=context;
-        TalkInfo.DataBean dataBean = ParesJsonUtil.handleCitiesResponse(context);
-        currentUserName=dataBean.getUsername();
-        list.addAll(dataBean.getItems());
+        this.currentUserName=currentUserName;
+        this.list=list;
 
+    }
+
+    public void setRecyclerAdapter(RecyclerAdapter adapter) {
+        this.adapter = adapter;
     }
 
     @Override
@@ -54,7 +72,7 @@ public class TalkAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         TalkHolder holder;
 
         if (convertView == null) {
@@ -78,11 +96,15 @@ public class TalkAdapter extends BaseAdapter {
             holder.tv.setMovementMethod(LinkMovementMethod.getInstance());
             holder.tv.setHighlightColor(context.getResources().getColor(R.color.gray_light));
         }
+        holder.tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (adapter!=null)
+                    adapter.specilShowPopWindow(v,position);
+            }
+        });
         return convertView;
     }
-
-
-
 
 
     public String getSingleText(int position) {
@@ -102,10 +124,11 @@ public class TalkAdapter extends BaseAdapter {
     }
     private void getDoubleEachWord(TextView tv, int fromLength,int toLength) {
         Spannable spans = (Spannable) tv.getText();
-        ClickableSpan clickSpan = getClickableSpan();
-        spans.setSpan(clickSpan, 0, fromLength,
+        ClickableSpan clickSpanFrom = getClickableSpan();//发送者
+        spans.setSpan(clickSpanFrom, 0, fromLength,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spans.setSpan(clickSpan, fromLength+4, fromLength+4+toLength,
+        ClickableSpan clickSpanTo = getClickableSpan();//接受者
+        spans.setSpan(clickSpanTo, fromLength+4, fromLength+4+toLength,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 

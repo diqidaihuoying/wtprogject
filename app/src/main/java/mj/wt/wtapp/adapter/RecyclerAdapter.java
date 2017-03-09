@@ -1,19 +1,31 @@
 package mj.wt.wtapp.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.provider.ContactsContract;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +44,10 @@ import java.util.List;
 
 import mj.wt.wtapp.ActionHelp;
 import mj.wt.wtapp.R;
+import mj.wt.wtapp.bean.TalkInfo;
 import mj.wt.wtapp.bean.ZoneBigPicture;
+import mj.wt.wtapp.utils.ParesJsonUtil;
+import mj.wt.wtapp.utils.SoftKeyBoardUtil;
 
 /**
  * Created by wantao on 2017/2/28.
@@ -45,16 +60,27 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     private static final int PICTURE_TYPE_BIG = 3;
     private static final int PICTURE_TYPE_MIDDLE = 4;
     private static final int PICTURE_TYPE_SMALL = 5;
+
     private Context context;
+    //点赞数据
     private LinkedList<String> likeNames = new LinkedList<>();
-
-
+    //评论数据
+    private LinkedList<TalkInfo.DataBean.ItemsBean> list=new LinkedList<>();
+    private String currentUserName="";
+    private PopupWindow popupWindow;
+    private EditText editText;
+    private TextView sendTv ;
+    //图片数据源
     private List<ZoneBigPicture.DataBean.ItemsBean> bigPictures;
-    //数据源
+
     public RecyclerAdapter(Context context, List<ZoneBigPicture.DataBean.ItemsBean> bigPictures) {
         this.context = context;
         this.bigPictures = bigPictures;
         ActionHelp.getLikesNames(likeNames);//初始化点赞列表
+
+        TalkInfo.DataBean dataBean = ParesJsonUtil.handleCitiesResponse(context);
+        currentUserName=dataBean.getUsername();
+        list.addAll(dataBean.getItems());
     }
 
     @Override
@@ -129,7 +155,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
                 @Override
                 public void onClick(View v) {
                     if ((int) holder.ivLike.getTag() == 1) {
-                        likeNames.addFirst("16岁少女被十几个老师轮流布置作业");
+                        likeNames.addFirst(currentUserName);
                         holder.ivLike.setImageResource(R.mipmap.favorite_pressed_c);
                         holder.ivLike.setTag(0);
                         Toast.makeText(context,likeNames.get(0)+"觉得很赞",Toast.LENGTH_SHORT).show();
@@ -145,8 +171,27 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         }
         if (holder.listView!=null)
         {
-            TalkAdapter adapter=new TalkAdapter(context);
+            TalkAdapter adapter=new TalkAdapter(context,list,currentUserName);
+            adapter.setRecyclerAdapter(this);
             holder.listView.setAdapter(adapter);
+        }
+        if (holder.ivComment!=null)
+        {
+            holder.ivComment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    normalShowPopWindow(v);
+                }
+            });
+        }
+        if (holder.tvComment!=null)
+        {
+            holder.tvComment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    normalShowPopWindow(v);
+                }
+            });
         }
     }
 
@@ -186,15 +231,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     class MyViewHolder extends RecyclerView.ViewHolder {
         ImageView ivBg;
         ImageView ivLike;
+        ImageView ivComment;
         SimpleDraweeView ivHead;
         TextView tvName;
         TextView tvTime;
         TextView tvContent;
+        TextView tvComment;
         RelativeLayout reLayout;
         LinearLayout linearLikeView;
         TextView tvLike;
         GridView gridView;
-        GridView listView;
+        ListView listView;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -207,7 +254,9 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             tvLike = (TextView) itemView.findViewById(R.id.tv_likelist);
             ivBg = (ImageView) itemView.findViewById(R.id.zoon_iv);
             ivLike= (ImageView) itemView.findViewById(R.id.iv_like);
-            listView= (GridView) itemView.findViewById(R.id.listview);
+            listView= (ListView) itemView.findViewById(R.id.listview);
+            ivComment= (ImageView) itemView.findViewById(R.id.iv_comment);
+            tvComment= (TextView) itemView.findViewById(R.id.tv_comment);
         }
     }
 
@@ -237,6 +286,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
                         .subSequence(tv.getSelectionStart(),
                                 tv.getSelectionEnd()).toString();
 
+
             }
 
             @Override
@@ -245,5 +295,96 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             }
 
         };
+    }
+
+    //普通评论
+    public void normalShowPopWindow(View v)
+    {
+        if (popupWindow==null)
+        {
+            createPopWindow();//创建PopWindow
+        }
+        editText.setHint("评论");
+        final EditText finalEditText = editText;
+        sendTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s= finalEditText.getText().toString();
+                if (!s.equals(""))
+                {
+                    finalEditText.setText("");
+                    popupWindow.dismiss();
+                    TalkInfo.DataBean.ItemsBean itemsBean=new TalkInfo.DataBean.ItemsBean();
+                    itemsBean.setMsg_from(currentUserName);
+                    itemsBean.setMsg_to(currentUserName);
+                    itemsBean.setMsg_content(s);
+                    list.add(list.size(),itemsBean);
+                    notifyDataSetChanged();
+                }else {
+                    Toast.makeText(context,"发送内容不能为空",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        setPopWindowLocation(v);//设置popwindow显示位置
+
+    }
+    //列表评论
+    public void specilShowPopWindow(View v, final int position) {
+        if (popupWindow==null)
+        {
+            createPopWindow();//创建PopWindow
+        }
+        if (list.get(position).getMsg_from().equals(currentUserName))
+                editText.setHint("回复" + list.get(position).getMsg_to() + ": ");
+        else
+                editText.setHint("回复" + list.get(position).getMsg_from() + ": ");
+        final EditText finalEditText = editText;
+        sendTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s= finalEditText.getText().toString();
+                if (!s.equals(""))
+                {
+                    finalEditText.setText("");
+                    popupWindow.dismiss();
+                    TalkInfo.DataBean.ItemsBean itemsBean=new TalkInfo.DataBean.ItemsBean();
+                    itemsBean.setMsg_from(currentUserName);
+                    if (list.get(position).getMsg_from().equals(currentUserName))
+                        itemsBean.setMsg_to(list.get(position).getMsg_to());
+                    else
+                        itemsBean.setMsg_to(list.get(position).getMsg_from());
+                    itemsBean.setMsg_content(s);
+                    list.add(position+1,itemsBean);
+                    notifyDataSetChanged();
+                }else {
+                    Toast.makeText(context,"发送内容不能为空",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+       setPopWindowLocation(v);
+    }
+
+
+    private void createPopWindow() {
+        // 获取自定义布局文件activity_popupwindow_left.xml的视图
+        final View popupWindowView = View.inflate(context,R.layout.talk_popupwindow,null);
+        editText= (EditText) popupWindowView.findViewById(R.id.et_comment);
+        sendTv = (TextView) popupWindowView.findViewById(R.id.tv_send);
+        // 创建PopupWindow实例,200,LayoutParams.MATCH_PARENT分别是宽度和高度
+        popupWindow = new PopupWindow(popupWindowView, RelativeLayout.LayoutParams.MATCH_PARENT,  RelativeLayout.LayoutParams.WRAP_CONTENT, false);
+        popupWindow.setFocusable(true);//设置之后在软键盘的上面，否则在底部，软键盘没有顶上去,而且点击外部消失
+        popupWindow.setBackgroundDrawable(new BitmapDrawable());
+
+    }
+
+    private void setPopWindowLocation(View v) {
+        // 这里是位置显示方式,在屏幕的左侧
+        popupWindow.showAtLocation((View) v.getParent(), Gravity.BOTTOM, 0, 0);
+        //键盘弹出来
+        SoftKeyBoardUtil.showKeyboard((Activity)context, true);
+    }
+
+    public PopupWindow getPopupWindow() {
+        return popupWindow;
     }
 }

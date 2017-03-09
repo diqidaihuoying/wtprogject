@@ -136,16 +136,17 @@
             android:textColor="@color/color_007bfb" />
     </LinearLayout>
 
-    <mj.wt.wtapp.widget.MyGridView
+    <mj.wt.wtapp.widget.MyListView
         android:layout_below="@id/line_likelist"
         android:id="@+id/listview"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:divider="@null"
         android:layout_width="match_parent"
-        android:horizontalSpacing="6dp"
-        android:numColumns="1"
-        android:layout_height="match_parent"></mj.wt.wtapp.widget.MyGridView>
+        android:layout_height="wrap_content">
+
+    </mj.wt.wtapp.widget.MyListView>
 
     <TextView
         android:id="@+id/tv_comment"
