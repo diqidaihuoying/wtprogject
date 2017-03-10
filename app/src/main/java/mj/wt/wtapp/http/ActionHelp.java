@@ -1,4 +1,4 @@
-package mj.wt.wtapp;
+package mj.wt.wtapp.http;
 
 import android.app.Activity;
 

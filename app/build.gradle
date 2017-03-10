@@ -23,6 +23,15 @@ android {
         }
     }
 }
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.greenrobot:greendao-gradle-plugin:3.0.0'
+    }
+}
+apply plugin: 'org.greenrobot.greendao'
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -35,4 +44,8 @@ dependencies {
     compile 'com.android.support:design:24.2.1'
     compile project(':okhttp')
     compile 'com.google.code.gson:gson:2.8.0'
+    compile 'org.greenrobot:greendao:3.0.1'
+}
+greendao {
+    targetGenDir 'src/main/java'
 }

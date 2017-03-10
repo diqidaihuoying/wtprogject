@@ -5,10 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
@@ -19,12 +16,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import mj.wt.wtapp.ActionHelp;
+import mj.wt.wtapp.http.ActionHelp;
 import mj.wt.wtapp.R;
 import mj.wt.wtapp.adapter.RecyclerAdapter;
 import mj.wt.wtapp.bean.ZoneBigPicture;
 import mj.wt.wtapp.http.ObjectCallback;
-import mj.wt.wtapp.utils.StatusBarUtil;
 import okhttp3.Call;
 
 public class ZoonActivity extends AppCompatActivity {

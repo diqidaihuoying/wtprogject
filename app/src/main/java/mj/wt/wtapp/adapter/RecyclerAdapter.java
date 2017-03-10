@@ -2,10 +2,9 @@ package mj.wt.wtapp.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
-import android.provider.ContactsContract;
+import android.media.MediaPlayer;
 import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.TextPaint;
@@ -13,13 +12,11 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.view.WindowManager;
-import android.widget.AdapterView;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -30,22 +27,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.basic.utils.DateUtil;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.generic.GenericDraweeHierarchy;
-import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
-import com.facebook.drawee.generic.RoundingParams;
-import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import mj.wt.wtapp.ActionHelp;
+import mj.wt.wtapp.greendao.SongDbManager;
+import mj.wt.wtapp.http.ActionHelp;
 import mj.wt.wtapp.R;
+import mj.wt.wtapp.bean.Song;
 import mj.wt.wtapp.bean.TalkInfo;
 import mj.wt.wtapp.bean.ZoneBigPicture;
+import mj.wt.wtapp.utils.MusicUtils;
 import mj.wt.wtapp.utils.ParesJsonUtil;
 import mj.wt.wtapp.utils.SoftKeyBoardUtil;
 
@@ -65,22 +60,40 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     //点赞数据
     private LinkedList<String> likeNames = new LinkedList<>();
     //评论数据
-    private LinkedList<TalkInfo.DataBean.ItemsBean> list=new LinkedList<>();
-    private String currentUserName="";
+    private LinkedList<TalkInfo.DataBean.ItemsBean> list = new LinkedList<>();
+    private String currentUserName = "";
     private PopupWindow popupWindow;
     private EditText editText;
-    private TextView sendTv ;
+    private TextView sendTv;
     //图片数据源
     private List<ZoneBigPicture.DataBean.ItemsBean> bigPictures;
+    //音乐资源
+    private boolean musicIsPrepare=false;
+    private MediaPlayer mediaPlayer;
+    private List<Song> musicData;
+    private AnimationDrawable animationDrawable;
+    private Animation tVPaoMaDeng=new TranslateAnimation(0,-400f,0.0f,0.0f);
+
+
 
     public RecyclerAdapter(Context context, List<ZoneBigPicture.DataBean.ItemsBean> bigPictures) {
         this.context = context;
         this.bigPictures = bigPictures;
-        ActionHelp.getLikesNames(likeNames);//初始化点赞列表
 
+        ActionHelp.getLikesNames(likeNames);//初始化点赞列表
+        //解析回复列表本地数据
         TalkInfo.DataBean dataBean = ParesJsonUtil.handleCitiesResponse(context);
-        currentUserName=dataBean.getUsername();
+        currentUserName = dataBean.getUsername();
         list.addAll(dataBean.getItems());
+        //获取本地音乐
+        musicData = MusicUtils.getMusicData(context);
+        mediaPlayer = new MediaPlayer();
+
+        //设置跑马灯动画效果
+        tVPaoMaDeng.setDuration(10000);
+        tVPaoMaDeng.setRepeatCount(500);
+        tVPaoMaDeng.setRepeatMode(1);
+
     }
 
     @Override
@@ -94,9 +107,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         } else {
             view = LayoutInflater.from(context).inflate(R.layout.zone_item, null);
             holder = new MyViewHolder(view);
-            if (viewType == VOICE_TYPE)
+            if (viewType == VOICE_TYPE) {
                 layout = LayoutInflater.from(context).inflate(R.layout.zone_voice_layout, null);
-            else if (viewType == VIDEO_TYPE)
+                holder.voiceView = (RelativeLayout) layout.findViewById(R.id.voiceview);
+                holder.musicName = (TextView) layout.findViewById(R.id.music_name);
+                holder.musicIv = (ImageView) layout.findViewById(R.id.music_iv);
+            } else if (viewType == VIDEO_TYPE)
                 layout = LayoutInflater.from(context).inflate(R.layout.zone_video_layout, null);
             else {
                 layout = LayoutInflater.from(context).inflate(R.layout.zone_picture_layout, null);
@@ -108,7 +124,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     }
 
     @Override
-    public void onBindViewHolder(final MyViewHolder holder, int position) {
+    public void onBindViewHolder(final MyViewHolder holder, final int position) {
         if (holder.ivHead != null) {
             holder.ivHead.setImageURI(bigPictures.get(position).getCover_image_url());
         }
@@ -147,8 +163,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
         }
         if (holder.ivLike != null) {
-            if (holder.ivLike.getTag()==null)
-            {
+            if (holder.ivLike.getTag() == null) {
                 holder.ivLike.setTag(1);
             }
             holder.ivLike.setOnClickListener(new View.OnClickListener() {
@@ -158,7 +173,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
                         likeNames.addFirst(currentUserName);
                         holder.ivLike.setImageResource(R.mipmap.favorite_pressed_c);
                         holder.ivLike.setTag(0);
-                        Toast.makeText(context,likeNames.get(0)+"觉得很赞",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, likeNames.get(0) + "觉得很赞", Toast.LENGTH_SHORT).show();
                     } else {
                         likeNames.remove(0);
                         holder.ivLike.setImageResource(R.mipmap.post_like);
@@ -169,14 +184,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
             });
         }
-        if (holder.listView!=null)
-        {
-            TalkAdapter adapter=new TalkAdapter(context,list,currentUserName);
+        if (holder.listView != null) {
+            TalkAdapter adapter = new TalkAdapter(context, list, currentUserName);
             adapter.setRecyclerAdapter(this);
             holder.listView.setAdapter(adapter);
         }
-        if (holder.ivComment!=null)
-        {
+        if (holder.ivComment != null) {
             holder.ivComment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -184,8 +197,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
                 }
             });
         }
-        if (holder.tvComment!=null)
-        {
+        if (holder.tvComment != null) {
             holder.tvComment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -193,19 +205,78 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
                 }
             });
         }
+        if (holder.musicName != null) {
+            holder.musicName.setText(musicData.get(position).singer + "-" + musicData.get(position).song);
+        }
+        if (holder.musicIv != null) {
+            animationDrawable = (AnimationDrawable) holder.musicIv.getDrawable();
+        }
+        if (holder.voiceView != null) {
+            perpareMusic(animationDrawable,musicData.get(position).path,position);
+            holder.voiceView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mediaPlayer.isPlaying()) {
+                        Song song= SongDbManager.getInstance(context).querySong(position);
+                        song.setProgress(mediaPlayer.getCurrentPosition());//更新播放进度
+                        SongDbManager.getInstance(context).updateSong(song);
+                        mediaPlayer.pause();
+                        holder.musicName.getAnimation().cancel();
+                        animationDrawable.stop();
+                    } else {
+                        if (musicIsPrepare) {
+                            Song song= SongDbManager.getInstance(context).querySong(position);
+                            if (song!=null) {
+                                mediaPlayer.seekTo((int) song.progress);
+                                mediaPlayer.start();
+                                holder.musicName.startAnimation(tVPaoMaDeng);
+                                animationDrawable.start();
+                            }
+                        }else {
+                            Toast.makeText(context,"歌曲加载中",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+
+    private void perpareMusic(AnimationDrawable animationDrawable,String path,int position) {
+        animationDrawable.stop();
+        mediaPlayer.reset();
+        try {
+            mediaPlayer.setDataSource(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        musicIsPrepare=false;
+        mediaPlayer.prepareAsync();
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                musicIsPrepare=true;//开始音频  
+            }
+        });
+        //设置id,重复插入会导致报错
+        Song song= SongDbManager.getInstance(context).querySong(position);
+        if (song==null) {
+            musicData.get(position).setId((long) position);
+            SongDbManager.getInstance(context).insetSong(musicData.get(position));
+        }
     }
 
     @Override
     public int getItemViewType(int position) {
         if (position == 0)
             return FIRST_ITEM;
-        else if (position == 1)
+        else if (position % 5 == 1)
             return VOICE_TYPE;
-        else if (position == 2)
+        else if (position % 5 == 2)
             return VIDEO_TYPE;
-        else if (position % 3 == 0)
+        else if (position % 5 == 3)
             return PICTURE_TYPE_BIG;
-        else if (position % 3 == 1)
+        else if (position % 5 == 4)
             return PICTURE_TYPE_MIDDLE;
         else
             return PICTURE_TYPE_SMALL;
@@ -217,7 +288,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     }
 
     public String getLikes() {
-        String likes="";
+        String likes = "";
         for (int i = 0; i < likeNames.size(); i++) {
             if (i != likeNames.size() - 1)
                 likes += likeNames.get(i) + "丶";
@@ -242,6 +313,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         TextView tvLike;
         GridView gridView;
         ListView listView;
+        //音乐控件
+        RelativeLayout voiceView;
+        TextView musicName;
+        ImageView musicIv;
 
         public MyViewHolder(View itemView) {
             super(itemView);
@@ -253,10 +328,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             linearLikeView = (LinearLayout) itemView.findViewById(R.id.line_likelist);
             tvLike = (TextView) itemView.findViewById(R.id.tv_likelist);
             ivBg = (ImageView) itemView.findViewById(R.id.zoon_iv);
-            ivLike= (ImageView) itemView.findViewById(R.id.iv_like);
-            listView= (ListView) itemView.findViewById(R.id.listview);
-            ivComment= (ImageView) itemView.findViewById(R.id.iv_comment);
-            tvComment= (TextView) itemView.findViewById(R.id.tv_comment);
+            ivLike = (ImageView) itemView.findViewById(R.id.iv_like);
+            listView = (ListView) itemView.findViewById(R.id.listview);
+            ivComment = (ImageView) itemView.findViewById(R.id.iv_comment);
+            tvComment = (TextView) itemView.findViewById(R.id.tv_comment);
+
         }
     }
 
@@ -298,10 +374,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     }
 
     //普通评论
-    public void normalShowPopWindow(View v)
-    {
-        if (popupWindow==null)
-        {
+    public void normalShowPopWindow(View v) {
+        if (popupWindow == null) {
             createPopWindow();//创建PopWindow
         }
         editText.setHint("评论");
@@ -309,69 +383,67 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         sendTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String s= finalEditText.getText().toString();
-                if (!s.equals(""))
-                {
+                String s = finalEditText.getText().toString();
+                if (!s.equals("")) {
                     finalEditText.setText("");
                     popupWindow.dismiss();
-                    TalkInfo.DataBean.ItemsBean itemsBean=new TalkInfo.DataBean.ItemsBean();
+                    TalkInfo.DataBean.ItemsBean itemsBean = new TalkInfo.DataBean.ItemsBean();
                     itemsBean.setMsg_from(currentUserName);
                     itemsBean.setMsg_to(currentUserName);
                     itemsBean.setMsg_content(s);
-                    list.add(list.size(),itemsBean);
+                    list.add(list.size(), itemsBean);
                     notifyDataSetChanged();
-                }else {
-                    Toast.makeText(context,"发送内容不能为空",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "发送内容不能为空", Toast.LENGTH_SHORT).show();
                 }
             }
         });
         setPopWindowLocation(v);//设置popwindow显示位置
 
     }
+
     //列表评论
     public void specilShowPopWindow(View v, final int position) {
-        if (popupWindow==null)
-        {
+        if (popupWindow == null) {
             createPopWindow();//创建PopWindow
         }
         if (list.get(position).getMsg_from().equals(currentUserName))
-                editText.setHint("回复" + list.get(position).getMsg_to() + ": ");
+            editText.setHint("回复" + list.get(position).getMsg_to() + ": ");
         else
-                editText.setHint("回复" + list.get(position).getMsg_from() + ": ");
+            editText.setHint("回复" + list.get(position).getMsg_from() + ": ");
         final EditText finalEditText = editText;
         sendTv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String s= finalEditText.getText().toString();
-                if (!s.equals(""))
-                {
+                String s = finalEditText.getText().toString();
+                if (!s.equals("")) {
                     finalEditText.setText("");
                     popupWindow.dismiss();
-                    TalkInfo.DataBean.ItemsBean itemsBean=new TalkInfo.DataBean.ItemsBean();
+                    TalkInfo.DataBean.ItemsBean itemsBean = new TalkInfo.DataBean.ItemsBean();
                     itemsBean.setMsg_from(currentUserName);
                     if (list.get(position).getMsg_from().equals(currentUserName))
                         itemsBean.setMsg_to(list.get(position).getMsg_to());
                     else
                         itemsBean.setMsg_to(list.get(position).getMsg_from());
                     itemsBean.setMsg_content(s);
-                    list.add(position+1,itemsBean);
+                    list.add(position + 1, itemsBean);
                     notifyDataSetChanged();
-                }else {
-                    Toast.makeText(context,"发送内容不能为空",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "发送内容不能为空", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-       setPopWindowLocation(v);
+        setPopWindowLocation(v);
     }
 
 
     private void createPopWindow() {
         // 获取自定义布局文件activity_popupwindow_left.xml的视图
-        final View popupWindowView = View.inflate(context,R.layout.talk_popupwindow,null);
-        editText= (EditText) popupWindowView.findViewById(R.id.et_comment);
+        final View popupWindowView = View.inflate(context, R.layout.talk_popupwindow, null);
+        editText = (EditText) popupWindowView.findViewById(R.id.et_comment);
         sendTv = (TextView) popupWindowView.findViewById(R.id.tv_send);
         // 创建PopupWindow实例,200,LayoutParams.MATCH_PARENT分别是宽度和高度
-        popupWindow = new PopupWindow(popupWindowView, RelativeLayout.LayoutParams.MATCH_PARENT,  RelativeLayout.LayoutParams.WRAP_CONTENT, false);
+        popupWindow = new PopupWindow(popupWindowView, RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT, false);
         popupWindow.setFocusable(true);//设置之后在软键盘的上面，否则在底部，软键盘没有顶上去,而且点击外部消失
         popupWindow.setBackgroundDrawable(new BitmapDrawable());
 
@@ -381,10 +453,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         // 这里是位置显示方式,在屏幕的左侧
         popupWindow.showAtLocation((View) v.getParent(), Gravity.BOTTOM, 0, 0);
         //键盘弹出来
-        SoftKeyBoardUtil.showKeyboard((Activity)context, true);
+        SoftKeyBoardUtil.showKeyboard((Activity) context, true);
     }
 
-    public PopupWindow getPopupWindow() {
-        return popupWindow;
-    }
 }
