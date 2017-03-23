@@ -18,6 +18,8 @@ public class ActionHelp {
 
     public static final String Zone_BIG_PICTURE="http://api.liwushuo.com/v2/channels/101/items?";
 
+    public static final String VIDEO_PATH1="http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f30.mp4";
+    public static final String VIDEO_PATH2="http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
     /*
       空间页面获取大图信息
      limit 一次请求的个数

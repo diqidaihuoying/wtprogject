@@ -10,7 +10,6 @@ import android.text.Spannable;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +26,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dou361.ijkplayer.widget.PlayStateParams;
+import com.dou361.ijkplayer.widget.PlayerView;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.io.IOException;
@@ -40,6 +41,7 @@ import mj.wt.wtapp.R;
 import mj.wt.wtapp.bean.Song;
 import mj.wt.wtapp.bean.TalkInfo;
 import mj.wt.wtapp.bean.ZoneBigPicture;
+import mj.wt.wtapp.ui.ZoonActivity;
 import mj.wt.wtapp.utils.MusicUtils;
 import mj.wt.wtapp.utils.ParesJsonUtil;
 import mj.wt.wtapp.utils.SoftKeyBoardUtil;
@@ -48,7 +50,7 @@ import mj.wt.wtapp.utils.SoftKeyBoardUtil;
  * Created by wantao on 2017/2/28.
  */
 
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
+public class  RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> {
     private static final int FIRST_ITEM = 0;
     private static final int VOICE_TYPE = 1;
     private static final int VIDEO_TYPE = 2;
@@ -73,10 +75,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     private List<Song> musicData;
     private AnimationDrawable animationDrawable;
     private Animation tVPaoMaDeng=new TranslateAnimation(0,-400f,0.0f,0.0f);
+    private PlayerView player;
+    private VideoViewClickListener videoViewClickListener;
 
-
-
-    public RecyclerAdapter(Context context, List<ZoneBigPicture.DataBean.ItemsBean> bigPictures) {
+    public RecyclerAdapter(Context context, List<ZoneBigPicture.DataBean.ItemsBean> bigPictures,MediaPlayer mediaPlayer) {
         this.context = context;
         this.bigPictures = bigPictures;
 
@@ -87,13 +89,17 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         list.addAll(dataBean.getItems());
         //获取本地音乐
         musicData = MusicUtils.getMusicData(context);
-        mediaPlayer = new MediaPlayer();
+        this.mediaPlayer = mediaPlayer;
 
         //设置跑马灯动画效果
         tVPaoMaDeng.setDuration(10000);
         tVPaoMaDeng.setRepeatCount(500);
         tVPaoMaDeng.setRepeatMode(1);
 
+    }
+
+    public void setVideoViewClickListener(VideoViewClickListener videoViewClickListener) {
+        this.videoViewClickListener = videoViewClickListener;
     }
 
     @Override
@@ -112,8 +118,10 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
                 holder.voiceView = (RelativeLayout) layout.findViewById(R.id.voiceview);
                 holder.musicName = (TextView) layout.findViewById(R.id.music_name);
                 holder.musicIv = (ImageView) layout.findViewById(R.id.music_iv);
-            } else if (viewType == VIDEO_TYPE)
+            } else if (viewType == VIDEO_TYPE) {
                 layout = LayoutInflater.from(context).inflate(R.layout.zone_video_layout, null);
+                initVideoPlay(layout);
+            }
             else {
                 layout = LayoutInflater.from(context).inflate(R.layout.zone_picture_layout, null);
                 holder.gridView = (GridView) layout.findViewById(R.id.gridview);
@@ -121,6 +129,20 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
             holder.reLayout.addView(layout);
         }
         return holder;
+    }
+
+    private void initVideoPlay(View rootView) {
+        rootView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (videoViewClickListener!=null)
+                    videoViewClickListener.click();
+            }
+        });
+        player = new PlayerView((Activity) context, rootView) {
+        }
+                .setScaleType(PlayStateParams.fillparent);
+        ((ZoonActivity)context).setPlayer(player);
     }
 
     @Override
@@ -238,6 +260,16 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
                     }
                 }
             });
+        }
+        if (getItemViewType(position)==VIDEO_TYPE)
+        {
+            if (position==2)
+            {
+                player.setPlaySource(ActionHelp.VIDEO_PATH1);
+            }else
+            {
+                player.setPlaySource(ActionHelp.VIDEO_PATH2);
+            }
         }
     }
 
@@ -455,5 +487,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         //键盘弹出来
         SoftKeyBoardUtil.showKeyboard((Activity) context, true);
     }
+
+    public interface VideoViewClickListener
+    {
+        void click();
+    }
+
 
 }

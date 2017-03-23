@@ -1,1 +1,1 @@
-include ':app', ':basic', ':okhttp'
+include ':app', ':basic', ':okhttp', ':jjdxm-ijkplayer'
