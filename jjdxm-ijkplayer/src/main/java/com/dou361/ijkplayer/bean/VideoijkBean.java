@@ -20,6 +20,7 @@ package com.dou361.ijkplayer.bean;
  * <p>
  * ========================================
  */
+
 public class VideoijkBean {
     /**
      * id
@@ -41,7 +42,7 @@ public class VideoijkBean {
      * 当前选中的
      */
     boolean select;
-
+ 
     public int getId() {
         return id;
     }

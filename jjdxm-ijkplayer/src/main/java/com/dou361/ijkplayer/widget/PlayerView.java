@@ -1,10 +1,14 @@
 package com.dou361.ijkplayer.widget;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
+import android.media.MediaMetadataRetriever;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -31,12 +35,14 @@ import com.dou361.ijkplayer.listener.OnShowThumbnailListener;
 import com.dou361.ijkplayer.utils.NetworkUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 
+@TargetApi(Build.VERSION_CODES.GINGERBREAD_MR1)
 public class PlayerView {
 
     /**
@@ -87,7 +93,7 @@ public class PlayerView {
      * 视频全屏按钮
      */
     private final ImageView iv_fullscreen;
-
+    private String currentUrl;
 
     /**
      * 视频加载速度
@@ -216,6 +222,7 @@ public class PlayerView {
             }
         }
     };
+    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
     /**========================================视频的监听方法==============================================*/
 
@@ -227,10 +234,7 @@ public class PlayerView {
      * 控制面板显示或隐藏监听
      */
     private OnControlPanelVisibilityChangeListener onControlPanelVisibilityChangeListener;
-    /**
-     * 视频封面显示监听
-     */
-    private OnShowThumbnailListener mOnShowThumbnailListener;
+
     /**
      * 视频的返回键监听
      */
@@ -254,7 +258,6 @@ public class PlayerView {
                     showOperatorPan(true);
                 if (videoView.isPlaying()) {
                     pausePlay();
-                    updatePlayUi();
                 } else {
                     if (isGNetWork && (NetworkUtils.getNetworkType(mContext) == 4 || NetworkUtils.getNetworkType(mContext) == 5 || NetworkUtils.getNetworkType(mContext) == 6)) {
                         query.id(R.id.app_video_netTie).visible();
@@ -290,16 +293,10 @@ public class PlayerView {
      * 更新播放按钮ui
      */
     private void updatePlayUi() {
-        if (status == PlayStateParams.STATE_PREPARING
-                || status == PlayStateParams.MEDIA_INFO_BUFFERING_START) {
-            query.id(R.id.app_video_loading).visible();
-            iv_player.setVisibility(View.GONE);
-        } else if (status == PlayStateParams.STATE_PLAYING) {
-            query.id(R.id.app_video_loading).gone();
+       if (status == PlayStateParams.STATE_PLAYING) {
             iv_player.setVisibility(View.GONE);
             iv_player.setImageResource(R.drawable.simple_player_center_pause);
         } else {
-            query.id(R.id.app_video_loading).gone();
             iv_player.setVisibility(View.VISIBLE);
             iv_player.setImageResource(R.drawable.simple_player_center_play);
         }
@@ -401,22 +398,37 @@ public class PlayerView {
         videoView.setOnInfoListener(new IMediaPlayer.OnInfoListener() {
             @Override
             public boolean onInfo(IMediaPlayer mp, int what, int extra) {
-                if (what == PlayStateParams.MEDIA_INFO_NETWORK_BANDWIDTH || what == PlayStateParams.MEDIA_INFO_BUFFERING_BYTES_UPDATE) {
-                    Log.e("", "dou361.====extra=======" + extra);
-                    if (tv_speed != null) {
+                if (tv_speed != null) {
                         tv_speed.setText(getFormatSize(extra));
-                    }
                 }
                 statusChange(what);
                 if (onInfoListener != null) {
                     onInfoListener.onInfo(mp, what, extra);
                 }
+                getCurrentPosition();
                 return true;
             }
         });
 
         final GestureDetector gestureDetector = new GestureDetector(mContext, new PlayerGestureListener());
-
+        rl_box.setClickable(true);
+        rl_box.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN:
+                        break;
+                }
+                if (gestureDetector.onTouchEvent(motionEvent))
+                    return true;
+                // 处理手势结束
+                switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_UP:
+                        break;
+                }
+                return false;
+            }
+        });
 
         orientationEventListener = new OrientationEventListener(mActivity) {
             @Override
@@ -480,16 +492,7 @@ public class PlayerView {
     }
 
 
-    /**
-     * 显示缩略图
-     */
-    public PlayerView showThumbnail(OnShowThumbnailListener onShowThumbnailListener) {
-        this.mOnShowThumbnailListener = onShowThumbnailListener;
-        if (mOnShowThumbnailListener != null && iv_trumb != null) {
-            mOnShowThumbnailListener.onShowThumbnail(iv_trumb);
-        }
-        return this;
-    }
+
 
 
     /**
@@ -536,6 +539,8 @@ public class PlayerView {
         mVideoijkBean.setStream(stream);
         mVideoijkBean.setUrl(url);
         setPlaySource(mVideoijkBean);
+        currentUrl = url;
+        currentPosition=0;
         return this;
     }
 
@@ -548,14 +553,6 @@ public class PlayerView {
         return this;
     }
 
-    /**
-     * 自动播放
-     */
-    public PlayerView autoPlay(String path) {
-        setPlaySource(path);
-        startPlay();
-        return this;
-    }
 
     /**
      * 开始播放
@@ -563,6 +560,10 @@ public class PlayerView {
     public PlayerView startPlay() {
         status = PlayStateParams.STATE_PREPARING;
         if (playerSupport) {
+            //换源之后声音可播，画面卡住，主要是渲染问题，目前只是提供了软解方式，后期提供设置方式
+                videoView.setRender(videoView.RENDER_TEXTURE_VIEW);
+                videoView.setVideoPath(currentUrl);
+                videoView.seekTo(currentPosition);
                 videoView.start();
             } else {
                 Toast.makeText(mContext, R.string.not_support, Toast.LENGTH_SHORT).show();
@@ -587,6 +588,7 @@ public class PlayerView {
         status = PlayStateParams.STATE_PAUSED;
         getCurrentPosition();
         videoView.pause();
+        updatePlayUi();
         return this;
     }
 
@@ -730,20 +732,27 @@ public class PlayerView {
         } else if (newStatus == PlayStateParams.STATE_PREPARING
                 || newStatus == PlayStateParams.MEDIA_INFO_BUFFERING_START) {
             status = PlayStateParams.STATE_PREPARING;
+            query.id(R.id.app_video_loading).visible();
             /**视频缓冲*/
-        } else if (status == PlayStateParams.STATE_PAUSED) {
-            status = PlayStateParams.STATE_PAUSED;
         } else {
-            status = PlayStateParams.STATE_PLAYING;
-        }
-        /**视频缓冲结束后隐藏缩列图*/
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                /**延迟0.5秒隐藏视频封面隐藏*/
-                query.id(R.id.ll_bg).gone();
+            if (status == PlayStateParams.STATE_PAUSED) {
+                status = PlayStateParams.STATE_PAUSED;
+            } else {
+                status = PlayStateParams.STATE_PLAYING;
             }
-        }, 500);
+            /**视频缓冲结束后隐藏缩列图*/
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    /**延迟0.5秒隐藏视频封面隐藏*/
+                    query.id(R.id.ll_bg).gone();
+                    query.id(R.id.app_video_loading).gone();
+                    mHandler.removeMessages(MESSAGE_SHOW_PROGRESS);
+                    mHandler.sendEmptyMessage(MESSAGE_SHOW_PROGRESS);
+                }
+            }, 500);
+            updatePlayUi();
+        }
     }
 
 
@@ -891,7 +900,9 @@ public class PlayerView {
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
             /**视频视窗单击事件*/
-                showOperatorPan(true);
+            showOperatorPan(true);
+            mHandler.removeMessages(MESSAGE_HIDE_UI);
+            mHandler.sendEmptyMessageDelayed(MESSAGE_HIDE_UI,3000);
             return true;
         }
     }

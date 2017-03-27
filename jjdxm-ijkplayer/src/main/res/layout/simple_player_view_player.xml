@@ -85,7 +85,7 @@
             android:layout_marginTop="4dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="188Kb/s"
+            android:text="0Kb/s"
             android:textColor="@android:color/white"/>
     </LinearLayout>
 
