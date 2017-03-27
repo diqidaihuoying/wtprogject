@@ -5,9 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.media.AudioManager;
-import android.media.MediaMetadataRetriever;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,8 +18,11 @@ import android.view.MotionEvent;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,11 +31,9 @@ import com.dou361.ijkplayer.R;
 import com.dou361.ijkplayer.bean.VideoijkBean;
 import com.dou361.ijkplayer.listener.OnControlPanelVisibilityChangeListener;
 import com.dou361.ijkplayer.listener.OnPlayerBackListener;
-import com.dou361.ijkplayer.listener.OnShowThumbnailListener;
 import com.dou361.ijkplayer.utils.NetworkUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
@@ -210,7 +208,9 @@ public class PlayerView {
                     if (!isDragging) {
                         msg = obtainMessage(MESSAGE_SHOW_PROGRESS);
                         sendMessageDelayed(msg, 1000 - (pos % 1000));
-
+                    }else
+                    {
+                        startPlay();
                     }
                     break;
                 case MESSAGE_HIDE_UI:
@@ -222,7 +222,6 @@ public class PlayerView {
             }
         }
     };
-    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 
     /**========================================视频的监听方法==============================================*/
 
@@ -259,12 +258,7 @@ public class PlayerView {
                 if (videoView.isPlaying()) {
                     pausePlay();
                 } else {
-                    if (isGNetWork && (NetworkUtils.getNetworkType(mContext) == 4 || NetworkUtils.getNetworkType(mContext) == 5 || NetworkUtils.getNetworkType(mContext) == 6)) {
-                        query.id(R.id.app_video_netTie).visible();
-                    } else {
-                        query.id(R.id.app_video_netTie).gone();
-                        startPlay();
-                    }
+                    startPlay();
                     mHandler.removeMessages(MESSAGE_HIDE_UI);
                     mHandler.sendEmptyMessageDelayed(MESSAGE_HIDE_UI, 3000);
                 }
@@ -337,6 +331,7 @@ public class PlayerView {
             mHandler.removeMessages(MESSAGE_SHOW_PROGRESS);
             isDragging = false;
             mHandler.sendEmptyMessageDelayed(MESSAGE_SHOW_PROGRESS, 1000);
+
         }
     };
 
@@ -559,8 +554,13 @@ public class PlayerView {
      */
     public PlayerView startPlay() {
         status = PlayStateParams.STATE_PREPARING;
-        if (playerSupport) {
-            //换源之后声音可播，画面卡住，主要是渲染问题，目前只是提供了软解方式，后期提供设置方式
+        if (isGNetWork && (NetworkUtils.getNetworkType(mContext) == 4 || NetworkUtils.getNetworkType(mContext) == 5 || NetworkUtils.getNetworkType(mContext) == 6)) {
+            query.id(R.id.play_icon).gone();
+            query.id(R.id.app_video_netTie).visible();
+        } else {
+            if (playerSupport) {
+                query.id(R.id.app_video_netTie).gone();
+                //换源之后声音可播，画面卡住，主要是渲染问题，目前只是提供了软解方式，后期提供设置方式
                 videoView.setRender(videoView.RENDER_TEXTURE_VIEW);
                 videoView.setVideoPath(currentUrl);
                 videoView.seekTo(currentPosition);
@@ -568,7 +568,9 @@ public class PlayerView {
             } else {
                 Toast.makeText(mContext, R.string.not_support, Toast.LENGTH_SHORT).show();
             }
-        updatePlayUi();
+            updatePlayUi();
+        }
+
         return this;
     }
 
@@ -899,10 +901,11 @@ public class PlayerView {
          */
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            /**视频视窗单击事件*/
-            showOperatorPan(true);
-            mHandler.removeMessages(MESSAGE_HIDE_UI);
-            mHandler.sendEmptyMessageDelayed(MESSAGE_HIDE_UI,3000);
+            if (videoView.isPlaying()) {
+                pausePlay();
+                /**视频视窗单击事件*/
+                showOperatorPan(true);
+            }
             return true;
         }
     }

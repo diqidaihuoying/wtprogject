@@ -87,7 +87,9 @@
         <activity android:name=".ui.LoginActivity" />
         <activity android:name=".ui.RegisterActivity" />
         <activity android:name=".ui.ChatActivity" />
-        <activity android:name=".ui.ZoonActivity">
+        <activity android:name=".ui.ZoonActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
